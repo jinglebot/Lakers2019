@@ -1,7 +1,7 @@
 # MATH E-23C
 # Term Project Initial EDA
 
-# Submitted by: Maria Cristina An, Daniel Lebedinsky
+# Submitted by: Maria Cristina An, Daniel Lebedinsky, Julio Solis Arce
 # Date: March 23, 2022
 
 # 1. Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
