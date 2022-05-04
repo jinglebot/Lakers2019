@@ -113,7 +113,7 @@ Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
 ```{r, message = FALSE, warning = FALSE}
 
 #Import dataset
-Lakers <- read.csv("Lakers\ 2019-20\ Game\ log.csv"); head(Lakers)
+Lakers <- read.csv("Lakers\ 2019-20\ Game\ log.csv"); head(Lakers, n = c(6, 8)) %>% knitr::kable()
 
 # Convert to proper date format
 Lakers$Dates <- as.Date(Lakers$Date)
