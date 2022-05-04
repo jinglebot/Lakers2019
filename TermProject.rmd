@@ -6,56 +6,97 @@ output: html_document
 ---
 
 ## Glossary
- Rk -- Rank
- G -- Season Game
- W_E -- opponent is from East or West
- Opp -- Opponent
- W_L -- Lakers team won or lost
- Tm -- Lakers team Points
- Opp_pts -- Opponent Points
+- Rk -- Rank
+
+- G -- Season Game
+
+- W_E -- opponent is from East or West
+
+- Opp -- Opponent
+
+- W_L -- Lakers team won or lost
+
+- Tm -- Lakers team Points
+
+- Opp_pts -- Opponent Points
 
 # Lakers 
- FG_LA -- Field Goals
- FGA_LA -- Field Goal Attempts
- FGpc_LA -- Field Goal Percentage
- X3P_LA -- 3-Point Field Goals
- X3PA_LA -- 3-Point Field Goal Attempts
- X3Ppc_LA -- 3-Point Field Goal Percentage
- FT_LA -- Free Throws
- FTA_LA -- Free Throw Attempts
- FTpc_LA -- Free Throw Percentage
- ORB_LA -- Offensive Rebounds
- TRB_LA -- Total Rebounds
- AST_LA -- Assists
- STL_LA -- Steals
- BLK_LA -- Blocks
- TOV_LA -- Turnovers
- PF_LA -- Personal Fouls
+
+- FG_LA -- Field Goals
+
+- FGA_LA -- Field Goal Attempts
+
+- FGpc_LA -- Field Goal Percentage
+
+- X3P_LA -- 3-Point Field Goals
+
+- X3PA_LA -- 3-Point Field Goal Attempts
+
+- X3Ppc_LA -- 3-Point Field Goal Percentage
+
+- FT_LA -- Free Throws
+
+- FTA_LA -- Free Throw Attempts
+
+- FTpc_LA -- Free Throw Percentage
+
+- ORB_LA -- Offensive Rebounds
+
+- TRB_LA -- Total Rebounds
+
+- AST_LA -- Assists
+
+- STL_LA -- Steals
+
+- BLK_LA -- Blocks
+
+- TOV_LA -- Turnovers
+
+- PF_LA -- Personal Fouls
 
 # Opponent
- FG -- Opponent Field Goals
- FGA -- Opponent Field Goal Attempts
- FGpc -- Opponent Field Goal Percentage
- X3P -- Opponent 3-Point Field Goals
- X3PA -- Opponent 3-Point Field Goal Attempts
- X3Ppc -- Opponent 3-Point Field Goal Percentage
- FT -- Opponent Free Throws
- FTA -- Opponent Free Throw Attempts
- FTpc -- Opponent Free Throw Percentage
- ORB -- Opponent Offensive Rebounds
- TRB -- Opponent Total Rebounds
- AST -- Opponent Assists
- STL -- Opponent Steals
- BLK -- Opponent Blocks
- TOV -- Opponent Turnovers
- PF -- Opponent Personal Fouls
+
+-FG -- Opponent Field Goals
+
+-FGA -- Opponent Field Goal Attempts
+
+-FGpc -- Opponent Field Goal Percentage
+
+-X3P -- Opponent 3-Point Field Goals
+
+-X3PA -- Opponent 3-Point Field Goal Attempts
+
+-X3Ppc -- Opponent 3-Point Field Goal Percentage
+
+-FT -- Opponent Free Throws
+
+-FTA -- Opponent Free Throw Attempts
+
+-FTpc -- Opponent Free Throw Percentage
+
+-ORB -- Opponent Offensive Rebounds
+
+-TRB -- Opponent Total Rebounds
+
+-AST -- Opponent Assists
+
+-STL -- Opponent Steals
+
+-BLK -- Opponent Blocks
+
+-TOV -- Opponent Turnovers
+
+-PF -- Opponent Personal Fouls
 
 ## 1. Importing and cleaning data
 Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
 ```{r}
+
+#Import dataset
 Lakers <- read.csv("Lakers\ 2019-20\ Game\ log.csv"); head(Lakers)
+
 # Convert to proper date format
-Dates <- as.Date(Date)
+Lakers$Dates <- as.Date(Lakers$Date)
 attach(Lakers)
 ```
 
