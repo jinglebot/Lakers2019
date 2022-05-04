@@ -11,6 +11,13 @@ output:
     number_sections: true
 ---
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#Packages used
+library(dplyr)
+```
+
 \newpage
 
 # Dataset description
@@ -116,7 +123,14 @@ attach(Lakers)
 ## Summary of variables
 
 ```{r}
-summary(Lakers)
+summary(Lakers) %>%
+  t() %>%
+  as.data.frame() %>%
+  select(-Var2) %>%
+  rename(Variable=Var1, Description=Freq) %>%
+  filter(!is.na(Description)) %>%
+  arrange(Variable) %>%
+  knitr::kable()
 ```
 
 ## Number of columns and rows in dataset
