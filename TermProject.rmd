@@ -1,11 +1,24 @@
 ---
 title: "Math E-23C Term Project"
+subtitle: "An analysis of the Lakers 2019 Championship season"
 author: "Maria Cristina An, Daniel Lebedinsky, Julio Solis Arce"
-date: '2022-05-06'
-output: html_document
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+abstract: "The current documents offer a comprehensive analysis of the Lakers 2019 season, in which they successfully defended the NBA championship"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
 ---
 
-## Glossary
+\newpage
+
+# Dataset description
+
+## Codebook
+
+### Game level variables
+
 - Rk -- Rank
 
 - G -- Season Game
@@ -20,7 +33,7 @@ output: html_document
 
 - Opp_pts -- Opponent Points
 
-# Lakers 
+### Lakers relevant variables
 
 - FG_LA -- Field Goals
 
@@ -54,41 +67,41 @@ output: html_document
 
 - PF_LA -- Personal Fouls
 
-# Opponent
+### Opponent relevant variables
 
--FG -- Opponent Field Goals
+- FG -- Opponent Field Goals
 
--FGA -- Opponent Field Goal Attempts
+- FGA -- Opponent Field Goal Attempts
 
--FGpc -- Opponent Field Goal Percentage
+- FGpc -- Opponent Field Goal Percentage
 
--X3P -- Opponent 3-Point Field Goals
+- X3P -- Opponent 3-Point Field Goals
 
--X3PA -- Opponent 3-Point Field Goal Attempts
+- X3PA -- Opponent 3-Point Field Goal Attempts
 
--X3Ppc -- Opponent 3-Point Field Goal Percentage
+- X3Ppc -- Opponent 3-Point Field Goal Percentage
 
--FT -- Opponent Free Throws
+- FT -- Opponent Free Throws
 
--FTA -- Opponent Free Throw Attempts
+- FTA -- Opponent Free Throw Attempts
 
--FTpc -- Opponent Free Throw Percentage
+- FTpc -- Opponent Free Throw Percentage
 
--ORB -- Opponent Offensive Rebounds
+- ORB -- Opponent Offensive Rebounds
 
--TRB -- Opponent Total Rebounds
+- TRB -- Opponent Total Rebounds
 
--AST -- Opponent Assists
+- AST -- Opponent Assists
 
--STL -- Opponent Steals
+- STL -- Opponent Steals
 
--BLK -- Opponent Blocks
+- BLK -- Opponent Blocks
 
--TOV -- Opponent Turnovers
+- TOV -- Opponent Turnovers
 
--PF -- Opponent Personal Fouls
+- PF -- Opponent Personal Fouls
 
-## 1. Importing and cleaning data
+## Importing and cleaning data
 Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
 ```{r, message = FALSE, warning = FALSE}
 
@@ -97,17 +110,16 @@ Lakers <- read.csv("Lakers\ 2019-20\ Game\ log.csv"); head(Lakers)
 
 # Convert to proper date format
 Lakers$Dates <- as.Date(Lakers$Date)
-detach(Lakers)
 attach(Lakers)
 ```
 
-## 2. and 3. Summary
+## Summary of variables
 
 ```{r}
 summary(Lakers)
 ```
 
-# 4. Number of columns and rows
+## Number of columns and rows in dataset
 ```{r}
 length(Lakers)
 nrow(Lakers)
@@ -116,9 +128,11 @@ WonLost <- W_L == "W"; head(WonLost)
 sum(WonLost) # total wins
 ```
 
-## Graphical Displays
+\newpage
 
-# 1. Barplot of wins vs losses for our team
+# Graphical analysis
+
+## Barplot of wins vs losses for our team
  This plot shows the number of losses compared to the number wins by our team. 
  The y-axis gives the count of wins and losses. The x-label answers the question
  "did the team win?", FALSE means losing and TRUE means winning.
@@ -127,7 +141,7 @@ barplot(table(WonLost), main = "Bar Plot of Lakers' 2019 Wins vs Losses", col = 
 ```
  
 
-# Barplot of 3 point shots from our team
+## Barplot of 3 point shots from our team
 
 This plot shows the number of times the team scores a 3-point shot in a game.
 How often a 3-pointer occurs ranges from the minimum of 2 to a maximum of 19
@@ -137,7 +151,7 @@ barplot(table(X3P_LA), main = "Bar Plot of Lakers' Number of 3-Pointers per Game
 ```
 
 
-# Barplot of Opponent blocks 
+## Barplot of Opponent blocks 
 
 This plot shows how often an opponent successfully blocks our team in a game.
 Most often (the median), an opponent is able to block 3 times and, of course, 
@@ -147,7 +161,7 @@ barplot(table(BLK), main = "Bar Plot of Lakers' Number of Opponent Blocks per Ga
 ```
 
 
-## 2. Histogram of 3 point shots
+## Histogram of 3 point shots
 
 This is a histogram version of the barplot which shows the number of times the team scores a 3-point shot in a game.
 The data is the same, and so is the result, a 3-pointer event ranges from the minimum of 2 to a maximum of 19.
@@ -156,7 +170,7 @@ hist(X3P_LA, xlab = "3 point shots", main = "Histogram of Lakers' 3 Pointers", c
 ```
 
 
-# Histogram of Opponent blocks
+## Histogram of Opponent blocks
  
 This is a histogram version that shows how often an opponent successfully blocks our team in a game.
 Same results, an opponent is able to block 3 times and ranges from 0 to 9 in a game.
@@ -165,7 +179,7 @@ hist(BLK, main = "Histogram of Lakers' Opponent Blocks", xlab="Number of Blocks"
 ```
 
 
-# Histogram of our team's number of Free Throws
+## Histogram of our team's number of Free Throws
 
 This histogram shows the probability of the number of free throws done by our team in a game.
 The range is from a minimum of 7 to a maximum of 33 with a maximum density at 14 and 17.
@@ -173,8 +187,11 @@ The range is from a minimum of 7 to a maximum of 33 with a maximum density at 14
 hist(FT_LA, probability=TRUE, main="Histogram of Lakers' Number of Free Throws per Game", xlab="Number of Free Throws", col = "pink", breaks=(0:35)) # free throws from the team per game
 ```
 
+\newpage
 
-## 3. Probability density graph overlay on the our team's total number of rebounds in a game
+# Probability analysis
+
+## Probability density graph overlay on the our team's total number of rebounds in a game
 
 Here we have our team's probability of the total number of rebounds in a game.
 Ranging from a minimum of 25 to a maximum of 62, the graph seems like it came from a 
@@ -193,7 +210,7 @@ curve(f, col="red", add=TRUE)
 #Our data does not differ much from the Normal Distribution, except in the first decile.
 ```
 
-# Probability density graph on the our team's scores in a game
+## Probability density graph on the our team's scores in a game
 
 We go back to our histogram of our team's score and its probability in a game.
 It also seems as if it fits a normal distribution like it shows with a normal distribution overlay.
@@ -220,7 +237,7 @@ abline(v=Chi2, col = "red")
 #The normal distribution was a good model
 ```
 
-## 4. Contingency tables
+## Contingency tables
 
 This table answers the question "how many times the opponents scored greater than 100 points in a game with our team".
 This does not say that the opponent won or not. But in the times that they did not, it only shows that our team scored more and that such a high scoring game would have been a truly awesome event to watch.
@@ -235,7 +252,11 @@ Less100 <- Tm < 100; Less100
 table(Less100)
 ```
 
-## 1. Permutation test
+\newpage
+
+# Inferential and statistical analysis
+
+## Permutation test
 Our permutation test will be comparing our team's scores in games played vs the opponents from the East and the opponents from the West
 
 H_o: The mean score of the opponents coming from the Eastern Conference is equal
@@ -257,7 +278,7 @@ ScorevsWest <- mean(Tm*Western); ScorevsWest # mean team score vs West = 76.2608
 It shows that there are more opponents coming from the West and that their mean score
 obviously would have a higher range.
 
-# Total number of games played and differences of mean scores 
+## Total number of games played and differences of mean scores 
 This will be our Observed value.
 ```{r}
 EW <- sum(Eastern) + sum(Western); EW # total number of games = 92
@@ -290,7 +311,6 @@ pvalue <- (sum(Score_diffs >= Observed)+1)/(N+1); pvalue # 1
 This goes to show that the data observed has a significant likelihood to have 
 come about by chance. Therefore, there is insufficient evidence to to reject the null hypothesis.
 
-## The End
 
 
 
