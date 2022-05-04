@@ -90,13 +90,14 @@ output: html_document
 
 ## 1. Importing and cleaning data
 Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
-```{r}
+```{r, message = FALSE, warning = FALSE}
 
 #Import dataset
 Lakers <- read.csv("Lakers\ 2019-20\ Game\ log.csv"); head(Lakers)
 
 # Convert to proper date format
 Lakers$Dates <- as.Date(Lakers$Date)
+detach(Lakers)
 attach(Lakers)
 ```
 
