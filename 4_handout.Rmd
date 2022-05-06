@@ -1,28 +1,35 @@
 ---
-title: "Math 23C"
-output: pdf_document
+title: "Math E-23C Term Project"
+subtitle: "An analysis of the Lakers 2019 Championship season"
+author: "Maria Cristina An, Daniel Lebedinsky, Julio Solis Arce"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+abstract: "The current documents offers a short summary of the analysis our team did  on the LA Lakers 2019 NBA championship campaign. First we provide a short motivation for our study. Then, we introduce the dataset. Finally, we describe the main findings of our analysis."
+output:
+  pdf_document
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Motivation
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Los Angeles Lakers is one of the most recognized sports franchise around the world. They are the basketball team with the most fans with around 22 million.^[https://bolavip.com/en/nba/The-25-NBA-teams-with-most-fans-20200423-0002.html]. According to recent polls, 44% of Americans have a positive opinion of the team and 87% of recognize the name of the team (ranking number 2 in both categories, only below Chicago Bulls).^[https://today.yougov.com/ratings/sports/fame/basketball-teams/all].
 
-```{r cars}
-summary(cars)
-```
+The season 2019-20 proved to be a very important season for LA Lakers. First, it was a season when playoffs were suspended due to COVID. Then, the season was also relevant due to the death of Kobe Bryant, Lakers world-known star. Whatever these circumstances, Lakers won the NBA Western Conference title and the NBA championship with a record of 52 wins against 19 loses.
 
-## Including Plots
+The present data analytic exercises investigates the successful and historic campaing of the Lakers. 
 
-You can also embed plots, for example:
+## Data set
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+The data set that we use for our analysis contains the 92 games that Lakers played during the season.^[Available here: https://www.basketball-reference.com/teams/LAL/2020/gamelog/] This game log has as observations every single game of the season including the regular season, the playoffs and the final against Miami. As variables the data set is exhaustive in recording the details of the game from both teams: we have data on points scored, goal attempts, goal percentage, number of goals and type of goals (field, 3-point, free throw), rebounds, steals, blocks, turnovers and fouls. 
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Main results
+
+- Result 1
+
+- Result 2
+
+- Result 3
