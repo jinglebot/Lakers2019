@@ -70,30 +70,52 @@ sum(WonLost) # total wins
 # Graphical Displays
 
 # 1. Barplot of wins vs losses for our team
-barplot(table(WonLost), main = "Bar Plot of Lakers' 2019 Wins vs Losses", col = "orange", ylab="Count")
+library(ggplot2)
+Lakers %>% ggplot(aes(WonLost))+geom_bar(fill="orange")+
+  xlab("Won Game?") +
+  ggtitle("Total Lakers Wins and Losses")
 # This plot shows the number of losses compared to the number wins by our team. 
 # The y-axis gives the count of wins and losses. The x-label answers the question
 # "did the team win?", FALSE means losing and TRUE means winning.
 
 # Barplot of 3 point shots from our team
-barplot(table(Lakers$X3P_LA), main = "Bar Plot of Lakers' Number of 3-Pointers per Game", xlab="Number of 3-pointers", ylab="Frequency", col = "yellow")
+Lakers %>% ggplot(aes(X3P_LA))+geom_bar(fill="yellow")+
+  xlab("3-pointer count") +
+  ylab("Frequency")+
+  ggtitle("Lakers' Number of 3-Pointers per Game")
 # This plot shows the number of times the team scores a 3-point shot in a game.
 # How often a 3-pointer occurs ranges from the minimum of 2 to a maximum of 19
 # in a single game.
 
 # Barplot of Opponent blocks 
-barplot(table(Lakers$BLK), main = "Bar Plot of Lakers' Number of Opponent Blocks per Game", xlab="Number of Blocks", ylab="Frequency", col = "green")
+Lakers %>% ggplot(aes(BLK))+geom_bar(fill="green")+
+  scale_x_continuous(breaks=c(1:10))+
+  xlab("Block count") +
+  ylab("Frequency")+
+  ggtitle("Lakers' Number of Opponent Blocks per Game")
 # This plot shows how often an opponent successfully blocks our team in a game.
 # Most often (the median), an opponent is able to block 3 times and, of course, 
 # depending on the opponent's abilities, blocks can range from 0 to 9 in a game.
 
 # 2.  Histogram of 3 point shots
-hist(Lakers$X3P_LA, xlab = "3 point shots", main = "Histogram of Lakers' 3 Pointers", col = "cyan", breaks=(0:25))
+Lakers %>%
+  ggplot(aes(X3P_LA)) +
+  geom_histogram(binwidth = 1, fill="cyan", col = "black")+
+  scale_x_continuous(breaks=c(0:20))+
+  ylab("Frequency")+
+  xlab("3 point shots")+
+  ggtitle("Histogram of Lakers' 3 Pointers") 
 # This is a histogram version of the barplot which shows the number of times the team scores a 3-point shot in a game.
 # The data is the same, and so is the result, a 3-pointer event ranges from the minimum of 2 to a maximum of 19.
 
 # Histogram of Opponent blocks
-hist(Lakers$BLK, main = "Histogram of Lakers' Opponent Blocks", xlab="Number of Blocks", col = "magenta", breaks=(0:12)) 
+Lakers %>%
+  ggplot(aes(BLK)) +
+  geom_histogram(binwidth = 1, fill="magenta", col = "black")+
+  scale_x_continuous(breaks=c(0:12))+
+  ylab("Frequency")+
+  xlab("Number of Blocks")+
+  ggtitle("Histogram of Lakers' Opponent Blocks") 
 # This is a histogram version that shows how often an opponent successfully blocks our team in a game.
 # Same results, an opponent is able to block 3 times and ranges from 0 to 9 in a game.
 
