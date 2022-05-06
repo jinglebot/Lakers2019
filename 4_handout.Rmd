@@ -3,7 +3,6 @@ title: "Math E-23C Term Project"
 subtitle: "An analysis of the Lakers 2019 Championship season"
 author: "Maria Cristina An, Daniel Lebedinsky, Julio Solis Arce"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-abstract: "The current documents offers a short summary of the analysis our team did  on the LA Lakers 2019 NBA championship campaign. First we provide a short motivation for our study. Then, we introduce the dataset. Finally, we describe the main findings of our analysis."
 output:
   pdf_document
 ---
