@@ -205,6 +205,12 @@ pvalue <- (sum(Score_diffs <= Observed)+1)/(N+1); pvalue # 1
 
 # The correlation of Lakers' score against the the opponents score in general
 chart.Correlation(Lakers[,7:8], histogram=TRUE, pch=19)
+# The scores garnered by the Lakers and the opponents have a significant correlation.
+# It's not surprising since the teams endeavors to outscore each other to win.
+# If one team makes an effort to gain a lot of points, the other would definitely try to best it.
+# So, the scores eventually end up not far from each other. Each game would be between equally 
+# formidable teams, since games where the 2 teams' would have scores that have a significant
+# difference is not likely per our permutation test.
 
 # The correlation of Lakers' score against the scores of the opponents from the West
 West <- Lakers[Western, ]; West
@@ -214,12 +220,25 @@ chart.Correlation(West[,7:8], histogram=TRUE, pch=19)
 East <- Lakers[Eastern, ]; East
 chart.Correlation(East[,7:8], histogram=TRUE, pch=19)
 
+# Here, we see that the correlation of our team's scores on games played against the Western opponents
+# has a roughly bigger impact than the correlation of our team's scores on games played against Eastern opponents. 
+# This can be interpreted as there not being any sign of predictability that can be seen when our team plays 
+# against opponents from the East. It could be that the score ranges of the Eastern opponents are more varied
+# than the score ranges of the Western opponents. Or it could be that there are more values with more games played
+# against Western opponents than Eastern opponents. 
+
 # The correlation of Lakers' score with their Field Goal, 3-pointers, Free throws, and Fouls
 chart.Correlation(Lakers[,c(7,9,12,15,24)], histogram=TRUE, pch=19)
 
 # The correlation of the Opponents' score with their Field Goal, 3-pointers, Free throws, and Fouls
 chart.Correlation(Lakers[,c(8,25,28,31,40)], histogram=TRUE, pch=19)
 
+# Here, we are looking for which variables play a positive or negative role in the teams' performance.
+# We check for correlations using 5 random variables and, this goes for both the Lakers and the opponents.
+# From the charts, field goals and  3-points play a significantly positive role in any team's performance.
+# Free throws and personal fouls less so. Field goals and 3-points have a positive correlation and so does
+# free throws and personal fouls. On the other hand, both field goals have a significantly negative
+# correlation with free throws. 
 
 # Multiple Linear Regression
 
@@ -271,7 +290,9 @@ varPred/varObs
 FG_3P <- lm(West$Tm~West$X3P_LA+West$FG_LA, data =West);FG_3P
 coeff   # we got the same coefficients
 summary(FG_3P)
-
+# The Multiple R-squared and adjusted R-squared are both on the high side which means our line is
+# a very good fit. And so, the coefficients tell us that these variables, the 3-points and the field goals,
+# are the ones that matter the most in influencing the magnitude of the team's score.
 
 # Regression with a higher-degree polynomial
 # Let's try linear regression on multiple variables, we'll use FT, FG and 3P 
@@ -290,17 +311,21 @@ BInv <- solve(B); BInv
 coeff <- BInv%*%t(A)%*%West$Tm; coeff
 f <- function(x) coeff[1]+coeff[2]*x
 curve(f, add = TRUE)    
+# Here, we can show a very nice linear relationship when we throw into our well-established  
+# field goals and 3-points the value added by the free throws to predict the score. 
 
-#Just include West_stat^2 as an extra predictor.
+# Just include West_stat^2 as an extra predictor.
 m3 <- West_stat^2    
 A <- cbind(m1,m2,m3)   #columns span a 3 dimensional subspace
-#Make an invertible square matrix
+# Make an invertible square matrix
 B <- t(A)%*%A; B
-#Invert it
+# Invert it
 BInv <- solve(B); BInv
 coeff <- BInv%*%t(A)%*%West$Tm; coeff
 f <- function(x) coeff[1]+coeff[2]*x + coeff[3]*x^2
 curve(f, add = TRUE, col = "red")   
+# Adding the square of the function based on the 3 variables doesn't change the line which 
+# means the squared value gives no contribution to the equation.
 
 
 # Logistic regression
@@ -335,13 +360,33 @@ curve( exp(results@coef[1]+results@coef[2]*x)/ (1+exp(results@coef[1]+results@co
 abline(h=0.5)
 abline(v=110)
 
-index <- which(pred == 110); head(index)   # games with Eastern opponents scoring 110 pts
-mean(EastWL[index])   # The Lakers won 100% of the time.
-index <- which(pred <= 110)    # games with Eastern opponents scoring <= 110 pts
+index <- which(pred == 110); index   # games with Eastern opponents scoring 110 pts
+mean(EastWL[index])   # The Lakers won 100% of the time. 
+index <- which(pred <= 110); index    # games with Eastern opponents scoring <= 110 pts
 mean(EastWL[index])   # The Lakers won 80% of the time.
-index <- which(pred > 110)    # games with Eastern opponents scoring > 110 pts
+index <- which(pred > 110); index    # games with Eastern opponents scoring > 110 pts
 mean(EastWL[index])   # The Lakers only won 36.3% of the time.
 
+
+# In conclusion, our aim was to establish if there is any significant difference in the Lakers' performance when 
+# playing against opponents from the East and against opponents from the West. Statistically, there doesn't appear
+# to be any. Proposing to practice differently based on the opponents' provenance would have been futile. 
+
+# We can say that what can be a significant find in this study would be that the most likely reason that
+# the Lakers won that season was on focusing their performance in augmenting the variables that matters most in a game.
+# Those are the field goals and the 3-points, and it did not matter whether the opponent is from the East or from the West.
+
+# If there would be any recommendations to improve the performance of the Lakers based on this study, the variables that
+# would need improvement are the free throws and the personal fouls. This would raise a lot of issues, of course, regarding
+# the ethics of playing dirty and, the causes and consequences of getting a free throw and a personal foul. 
+# We need to point out though, that the variables we chose to use in this study were picked randomly. Adding other variables 
+# like rebounds, assists and steals and testing their contribution to raising the score can be further explored.
+# Furthermore, impressing on the team to maintain their strong variables would have been a very good suggestion. 
+# Since sadly, that wasn't the case as they lost the title the very next year.
+
+# Finally, this dataset revolves solely around the Lakers and their 2019-2020 performance against their various opponents. 
+# Predicting if they will win or lose next season would require extensive dataset including further studies of their 
+# performance in those many years that they have played as well as that of their opponents.
 
 # The End
 
