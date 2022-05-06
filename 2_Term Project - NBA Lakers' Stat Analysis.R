@@ -103,18 +103,47 @@ hist(Lakers$FT_LA, probability=TRUE, main="Histogram of Lakers' Number of Free T
 # The range is from a minimum of 7 to a maximum of 33 with a maximum density at 14 and 17.
 
 # 3. Probability density graph overlay on the our team's total number of rebounds in a game
-hist(Lakers$TRB_LA, probability=TRUE, main = "Histogram of Lakers' Total Number of Rebounds per Game", ylim=c(0,0.08), xlab="Number of Rebounds", col = "pink", breaks=(20:65)) # total rebounds per game  
-curve(dnorm(x, 45, 5), col="purple", add=TRUE, lwd=2) # normal distribution
-# Here we have our team's probability of the total number of rebounds in a game.
-# Ranging from a minimum of 25 to a maximum of 62, the graph seems like it came from a 
-# normal distribution. Overlaying a normal distribution shows like it does.
+#Here we have our team's probability of the total number of rebounds in a game.
+#Ranging from a minimum of 25 to a maximum of 62, the graph seems like it came from a 
+#normal distribution. Overlaying a normal distribution shows like it does.
+mu<-mean(TRB_LA); stdv<- sd(TRB_LA)
+hist(TRB_LA, probability=TRUE, main = "Histogram of Lakers' Total Number of Rebounds per Game", ylim=c(0,0.08), xlab="Number of Rebounds", col = "pink", breaks=(20:65)) 
+# total rebounds per game  
+curve(dnorm(x, mu, stdv), col="purple", add=TRUE, lwd=2) 
+#Appears to be a normal distribution. We will compare it with Deciles and a Q-Q plot
+Normal10<- qnorm(seq(0.01, 0.99, by=0.1), mean=mu, sd=stdv);
+Data10<- quantile(TRB_LA, seq(0.01, 0.99, by=0.1), type=2);
+plot(Normal10, Data10)
+f<-function(x) x
+curve(f, col="red", add=TRUE)
+#Our data does not differ much from the Normal Distribution, except in the first decile.
 
-# Probability density graph on the our team's scores in a game
-hist(Lakers$Tm,breaks=seq(from=80, to = 150, by =5), probability=TRUE, main = "Histogram of Lakers' Scores per Game", xlab="Scores", col = "light blue") # team's score frequencies
-curve(dnorm(x, 115, 10), col="dark blue", add=TRUE, lwd=2)
-# We go back to our histogram of our team's score and its probability in a game.
-# It also seems as if it fits a normal distribution like it shows with a normal distribution overlay.
-# We can provide more proof later with a chi-square goodness of fit test.
+## Probability density graph on the our team's scores in a game
+
+#We go back to our histogram of our team's score and its probability in a game.
+#It also seems as if it fits a normal distribution like it shows with a normal distribution overlay.
+#We can provide more proof later with a chi-square goodness of fit test.
+
+mu<-mean(Tm); stdv<-sd(Tm)
+hist(Tm,breaks=seq(from=80, to = 150, by =5), probability=TRUE, main = "Histogram of Lakers' Scores per Game", xlab="Scores", col = "light blue") # team's score frequencies
+curve(dnorm(x, mu, stdv), col="dark blue", add=TRUE, lwd=2)
+
+#Binning and Chisq test to compare this histogram to a Normal Distribution
+dec <- qnorm(seq(0.0, 1, by = 0.1), mu, stdv); dec   #10 bins
+Exp <- rep(length(Tm)/10,10); Exp     #expected scores per bin
+#Now we can count how many scores are in each bin
+binscores <- numeric(10)
+for (i in 1:10)  
+  binscores[i] <- sum((Tm >= dec[i]) & (Tm <= dec[i+1]) ); binscores
+#Test for uniformity using chi square.
+Chi2 <- sum((binscores - Exp)^2/Exp); Chi2
+#There were 10 bins. We estimated 2 parameters (mu and stdv), which costs two degrees of freedom
+#Also we "made the totals match", costing another 1. So there are 10-2-1=7 df.
+curve(dchisq(x, df = 7), from = 0, to = 120 )
+abline(v=Chi2, col = "red")
+#The probability of this chi-square value is relatively large
+#The normal distribution was a good model
+
 
 # 4. Contingency table of how many times opponents scored > 100 in a game
 Opp100 <- Lakers$Opp_pts > 100; Opp100
