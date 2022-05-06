@@ -234,9 +234,206 @@ abline(v = Observed, col = "purple")
 #What is the probability (the P value) that a difference this large
 #could have arisen with a random subset?
 pvalue <- (sum(Score_diffs >= Observed)+1)/(N+1); pvalue # 1
-# This goes to shows that the data observed has a very big chance 
+# This goes to shows that the data observed has a very small chance 
 # to have come about by chance. Therefore, there is insufficient evidence to
 # to reject the null hypothesis.
+
+# Libraries
+# need to be run at most once
+# install.packages("PerformanceAnalytics") 
+library("PerformanceAnalytics") # for correlations
+#install.packages("stats4")   
+library(stats4) # for logistic regression
+
+# Correlations
+# We will use the Performance analytics package to show correlations.
+# p-values (0.001, 0.01, 0.05, 0.1, 1) <=> symbols("***", "**", "*", ".", "")
+
+# The correlation of Lakers' score against the the opponents score in general
+chart.Correlation(Lakers[,7:8], histogram=TRUE, pch=19)
+# The scores garnered by the Lakers and the opponents have a significant correlation.
+# It's not surprising since the teams endeavors to outscore each other to win.
+# If one team makes an effort to gain a lot of points, the other would definitely try to best it.
+# So, the scores eventually end up not far from each other. Each game would be between equally 
+# formidable teams, since games where the 2 teams' would have scores that have a significant
+# difference is not likely per our permutation test.
+
+# The correlation of Lakers' score against the scores of the opponents from the West
+West <- Lakers[Western, ]; West
+chart.Correlation(West[,7:8], histogram=TRUE, pch=19)
+
+# The correlation of Lakers' score against the scores of the opponents from the East
+East <- Lakers[Eastern, ]; East
+chart.Correlation(East[,7:8], histogram=TRUE, pch=19)
+
+# Here, we see that the correlation of our team's scores on games played against the Western opponents
+# has a roughly bigger impact than the correlation of our team's scores on games played against Eastern opponents. 
+# This can be interpreted as there not being any sign of predictability that can be seen when our team plays 
+# against opponents from the East. It could be that the score ranges of the Eastern opponents are more varied
+# than the score ranges of the Western opponents. Or it could be that there are more values with more games played
+# against Western opponents than Eastern opponents. 
+
+# The correlation of Lakers' score with their Field Goal, 3-pointers, Free throws, and Fouls
+chart.Correlation(Lakers[,c(7,9,12,15,24)], histogram=TRUE, pch=19)
+
+# The correlation of the Opponents' score with their Field Goal, 3-pointers, Free throws, and Fouls
+chart.Correlation(Lakers[,c(8,25,28,31,40)], histogram=TRUE, pch=19)
+
+# Here, we are looking for which variables play a positive or negative role in the teams' performance.
+# We check for correlations using 5 random variables and, this goes for both the Lakers and the opponents.
+# From the charts, field goals and  3-points play a significantly positive role in any team's performance.
+# Free throws and personal fouls less so. Field goals and 3-points have a positive correlation and so does
+# free throws and personal fouls. On the other hand, both field goals have a significantly negative
+# correlation with free throws. 
+
+# Multiple Linear Regression
+
+# Let us see how the Lakers performed against Western opponents
+# Let's extract only the Western games and use the columns for 3-point Shots and Field Goals
+WestPts <- Lakers$Tm[Western]; length(WestPts)
+West3P <- Lakers$X3P_LA[Western]; head(West3P)
+WestFG <- Lakers$FG_LA[Western]; head(WestFG)
+plot(WestPts,West3P)  
+plot(WestPts,WestFG) 
+West <- Lakers[Western,]; nrow(West)
+
+cor(WestPts, West3P)     
+chart.Correlation(West[,c(7,12)], histogram=TRUE, pch=19)
+cor(WestPts,WestFG)       
+chart.Correlation(West[,c(7,9)], histogram=TRUE, pch=19)
+
+# To minimize residuals, project onto the subspace spanned by constant
+# 3 pointers, and free throws
+m1 <- rep(1,length(West$X3P_LA))    #constant
+m2 <- West$X3P_LA    
+m3 <- West$FG_LA
+
+A <- cbind(m1,m2,m3)   # columns span a 3 dimensional subspace
+# Make an invertible square matrix
+B <- t(A)%*%A; B
+# Invert it
+BInv <- solve(B); BInv
+# Make the projection matrix.
+P <- A%*%BInv%*%t(A)
+
+PredictScore <- P%*%West$Tm   # the projection of the score onto subspace M
+coeff <- BInv%*%t(A)%*%West$Tm; coeff
+
+Resid <- West$Tm - coeff[1]*m1 - coeff[2]*m2 - coeff[3]*m3        # the residuals
+sum(Resid*m1); sum(Resid*m2) ; sum(Resid*m3) # orthogonal to all three basis vectors
+sqrt(sum(Resid^2))                   # this is the minimum possible length
+# Splitting up the variance
+varObs <- var(West$Tm); varObs # variance of observations
+varPred <- var(PredictScore); varPred # variance of predicted values
+varResid <-var(Resid); varResid # variance of residuals
+
+# The variance of the observations is the sum of the two pieces
+varObs; varPred +  varResid
+# Our predictors now explain a greater fraction of the variance
+varPred/varObs
+
+# Of course this has all been automated
+FG_3P <- lm(West$Tm~West$X3P_LA+West$FG_LA, data =West);FG_3P
+coeff   # we got the same coefficients
+summary(FG_3P)
+# The Multiple R-squared and adjusted R-squared are both on the high side which means our line is
+# a very good fit. And so, the coefficients tell us that these variables, the 3-points and the field goals,
+# are the ones that matter the most in influencing the magnitude of the team's score.
+
+# Regression with a higher-degree polynomial
+# Let's try linear regression on multiple variables, we'll use FT, FG and 3P 
+West_stat <- West$FT_LA+2*West$FG_LA+3*West$X3P_LA; head(Score); head(West$Tm)  # stats per game
+hist(West$Tm)   
+plot(West_stat, West$Tm, pch = '.', cex = 3)
+# Let's try a linear model
+m1 <- rep(1,length(West_stat))    #constant
+m2 <- West_stat    
+
+A <- cbind(m1,m2)   #columns span a 2 dimensional subspace
+#Make an invertible square matrix
+B <- t(A)%*%A; B
+#Invert it
+BInv <- solve(B); BInv
+coeff <- BInv%*%t(A)%*%West$Tm; coeff
+f <- function(x) coeff[1]+coeff[2]*x
+curve(f, add = TRUE)    
+# Here, we can show a very nice linear relationship when we throw into our well-established  
+# field goals and 3-points the value added by the free throws to predict the score. 
+
+# Just include West_stat^2 as an extra predictor.
+m3 <- West_stat^2    
+A <- cbind(m1,m2,m3)   #columns span a 3 dimensional subspace
+# Make an invertible square matrix
+B <- t(A)%*%A; B
+# Invert it
+BInv <- solve(B); BInv
+coeff <- BInv%*%t(A)%*%West$Tm; coeff
+f <- function(x) coeff[1]+coeff[2]*x + coeff[3]*x^2
+curve(f, add = TRUE, col = "red")   
+# Adding the square of the function based on the 3 variables doesn't change the line which 
+# means the squared value gives no contribution to the equation.
+
+
+# Logistic regression
+
+# Extract the scores column of the Eastern opponents and on which ones the Lakers won
+EastPts <- Lakers$Opp_pts[Eastern]; EastPts
+EastWL <- Lakers$W_L[Eastern] == "W"; head(EastWL) 
+plot(EastPts,EastWL)  # not a great candidate for a straight-line approximation, but let's try
+# Get the slope
+b <- cov(EastPts,EastWL)/var(EastPts); b   
+# Get the intercept
+a <- mean(EastWL) - b*mean(EastPts);a  
+# Add this regression line to the plot of the data
+abline(a, b, col = "red")
+# This is not a good approximation.
+
+# Get the predictor
+pred <- EastPts
+# Get the response
+resp <- EastWL
+# Let's use the function for multiple logistic regression
+MLL<- function(alpha, beta) {
+  -sum( log( exp(alpha+beta*pred)/(1+exp(alpha+beta*pred)) )*resp
+        + log(1/(1+exp(alpha+beta*pred)))*(1-resp) )
+}
+# Maximize the function of alpha and beta
+results<-mle(MLL, start = list(alpha = 0, beta = 0)) # an initial guess is required
+results@coef
+plot(EastPts,EastWL) # get a clean plot  
+curve( exp(results@coef[1]+results@coef[2]*x)/ (1+exp(results@coef[1]+results@coef[2]*x)),col = "blue", add=TRUE)
+#The curve shows a good model for the probability of winning as a function of the opponents' scores
+abline(h=0.5)
+abline(v=110)
+
+index <- which(pred == 110); index   # games with Eastern opponents scoring 110 pts
+mean(EastWL[index])   # The Lakers won 100% of the time. 
+index <- which(pred <= 110); index    # games with Eastern opponents scoring <= 110 pts
+mean(EastWL[index])   # The Lakers won 80% of the time.
+index <- which(pred > 110); index    # games with Eastern opponents scoring > 110 pts
+mean(EastWL[index])   # The Lakers only won 36.3% of the time.
+
+
+# In conclusion, our aim was to establish if there is any significant difference in the Lakers' performance when 
+# playing against opponents from the East and against opponents from the West. Statistically, there doesn't appear
+# to be any. Proposing to practice differently based on the opponents' provenance would have been futile. 
+
+# We can say that what can be a significant find in this study would be that the most likely reason that
+# the Lakers won that season was on focusing their performance in augmenting the variables that matters most in a game.
+# Those are the field goals and the 3-points, and it did not matter whether the opponent is from the East or from the West.
+
+# If there would be any recommendations to improve the performance of the Lakers based on this study, the variables that
+# would need improvement are the free throws and the personal fouls. This would raise a lot of issues, of course, regarding
+# the ethics of playing dirty and, the causes and consequences of getting a free throw and a personal foul. 
+# We need to point out though, that the variables we chose to use in this study were picked randomly. Adding other variables 
+# like rebounds, assists and steals and testing their contribution to raising the score can be further explored.
+# Furthermore, impressing on the team to maintain their strong variables would have been a very good suggestion. 
+# Since sadly, that wasn't the case as they lost the title the very next year.
+
+# Finally, this dataset revolves solely around the Lakers and their 2019-2020 performance against their various opponents. 
+# Predicting if they will win or lose next season would require extensive dataset including further studies of their 
+# performance in those many years that they have played as well as that of their opponents.
+
 
 # The End
 
