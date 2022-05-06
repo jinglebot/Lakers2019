@@ -20,6 +20,96 @@ library(dplyr)
 
 \newpage
 
+# Dataset description
+
+## Codebook
+
+### Game level variables
+
+- Rk -- Rank
+
+- G -- Season Game
+
+- W_E -- opponent is from East or West
+
+- Opp -- Opponent
+
+- W_L -- Lakers team won or lost
+
+- Tm -- Lakers team Points
+
+- Opp_pts -- Opponent Points
+
+### Lakers relevant variables
+
+- FG_LA -- Field Goals
+
+- FGA_LA -- Field Goal Attempts
+
+- FGpc_LA -- Field Goal Percentage
+
+- X3P_LA -- 3-Point Field Goals
+
+- X3PA_LA -- 3-Point Field Goal Attempts
+
+- X3Ppc_LA -- 3-Point Field Goal Percentage
+
+- FT_LA -- Free Throws
+
+- FTA_LA -- Free Throw Attempts
+
+- FTpc_LA -- Free Throw Percentage
+
+- ORB_LA -- Offensive Rebounds
+
+- TRB_LA -- Total Rebounds
+
+- AST_LA -- Assists
+
+- STL_LA -- Steals
+
+- BLK_LA -- Blocks
+
+- TOV_LA -- Turnovers
+
+- PF_LA -- Personal Fouls
+
+### Opponent relevant variables
+
+- FG -- Opponent Field Goals
+
+- FGA -- Opponent Field Goal Attempts
+
+- FGpc -- Opponent Field Goal Percentage
+
+- X3P -- Opponent 3-Point Field Goals
+
+- X3PA -- Opponent 3-Point Field Goal Attempts
+
+- X3Ppc -- Opponent 3-Point Field Goal Percentage
+
+- FT -- Opponent Free Throws
+
+- FTA -- Opponent Free Throw Attempts
+
+- FTpc -- Opponent Free Throw Percentage
+
+- ORB -- Opponent Offensive Rebounds
+
+- TRB -- Opponent Total Rebounds
+
+- AST -- Opponent Assists
+
+- STL -- Opponent Steals
+
+- BLK -- Opponent Blocks
+
+- TOV -- Opponent Turnovers
+
+- PF -- Opponent Personal Fouls
+
+## Importing and cleaning data
+Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
 ```{r, message = FALSE, warning = FALSE}
 
 #Import dataset
@@ -137,6 +227,25 @@ hist(FT_LA, probability=TRUE, main="Histogram of Lakers' Number of Free Throws p
 \newpage
 
 # Probability analysis
+
+## Probability density graph overlay on the our team's total number of rebounds in a game
+
+Here we have our team's probability of the total number of rebounds in a game.
+Ranging from a minimum of 25 to a maximum of 62, the graph seems like it came from a 
+normal distribution. Overlaying a normal distribution shows like it does.
+```{r}
+mu<-mean(TRB_LA); stdv<- sd(TRB_LA)
+hist(TRB_LA, probability=TRUE, main = "Histogram of Lakers' Total Number of Rebounds per Game", ylim=c(0,0.08), xlab="Number of Rebounds", col = "pink", breaks=(20:65)) 
+# total rebounds per game  
+curve(dnorm(x, mu, stdv), col="purple", add=TRUE, lwd=2) 
+#Appears to be a normal distribution. We will compare it with Deciles and a Q-Q plot
+Normal10<- qnorm(seq(0.01, 0.99, by=0.1), mean=mu, sd=stdv);
+Data10<- quantile(TRB_LA, seq(0.01, 0.99, by=0.1), type=2);
+plot(Normal10, Data10)
+f<-function(x) x
+curve(f, col="red", add=TRUE)
+#Our data does not differ much from the Normal Distribution, except in the first decile.
+```
 
 ## Probability density graph on the our team's scores in a game
 
