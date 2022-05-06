@@ -247,19 +247,20 @@ curve(f, col="red", add=TRUE)
 #Our data does not differ much from the Normal Distribution, except in the first decile.
 ```
 
-## Probability density graph on the our team's scores in a game
+## Probability density graph of our team's scores in a game
 
 We go back to our histogram of our team's score and its probability in a game.
 It also seems as if it fits a normal distribution like it shows with a normal distribution overlay.
 We can provide more proof later with a chi-square goodness of fit test.
 ```{r}
-mu<-mean(Tm); stdv<-sd(Tm)
+mu<-mean(Tm); mu
+stdv<-sd(Tm); stdv
 hist(Tm,breaks=seq(from=80, to = 150, by =5), probability=TRUE, main = "Histogram of Lakers' Scores per Game", xlab="Scores", col = "light blue") # team's score frequencies
 curve(dnorm(x, mu, stdv), col="dark blue", add=TRUE, lwd=2)
 
 #Binning and Chisq test to compare this histogram to a Normal Distribution
-dec <- qnorm(seq(0.0, 1, by = 0.1), mu, stdv); dec   #10 bins
-Exp <- rep(length(Tm)/10,10); Exp     #expected scores per bin
+dec <- qnorm(seq(0.0, 1, by = 0.1), mu, stdv)   #10 bins
+Exp <- rep(length(Tm)/10,10)    #expected scores per bin
 #Now we can count how many scores are in each bin
 binscores <- numeric(10)
 for (i in 1:10)  
@@ -273,6 +274,34 @@ abline(v=Chi2, col = "red")
 #The probability of this chi-square value is relatively large
 #The normal distribution was a good model
 ```
+
+## Probability density graph of the opponents' scores in a game
+
+The following analysis shows that the Lakers had a slightly higher mean score
+than their average opponents did.
+```{r}
+mu<-mean(Opp_pts); mu
+stdv<-sd(Opp_pts); stdv
+hist(Opp_pts,breaks=seq(from=80, to = 150, by =5), probability=TRUE, main = "Histogram of Lakers' Scores per Game", xlab="Scores", col = "violet") # team's score frequencies
+curve(dnorm(x, mu, stdv), col="dark blue", add=TRUE, lwd=2)
+
+#Binning and Chisq test to compare this histogram to a Normal Distribution
+dec <- qnorm(seq(0.0, 1, by = 0.1), mu, stdv)
+Exp <- rep(length(Opp_pts)/10,10)
+#Now we can count how many scores are in each bin
+binscores <- numeric(10)
+for (i in 1:10)  
+  binscores[i] <- sum((Opp_pts >= dec[i]) & (Opp_pts <= dec[i+1]) ); binscores
+#Test for uniformity using chi square.
+Chi2 <- sum((binscores - Exp)^2/Exp); Chi2
+#There were 10 bins. We estimated 2 parameters (mu and stdv), which costs two degrees of freedom
+#Also we "made the totals match", costing another 1. So there are 10-2-1=7 df.
+curve(dchisq(x, df = 7), from = 0, to = 120 )
+abline(v=Chi2, col = "red")
+#The probability of this chi-square value is relatively large
+#The normal distribution was a decent, but not ideal model
+```
+
 
 ## Contingency tables
 
@@ -347,7 +376,6 @@ pvalue <- (sum(Score_diffs >= Observed)+1)/(N+1); pvalue # 1
 
 This goes to show that the data observed has a significant likelihood to have 
 come about by chance. Therefore, there is insufficient evidence to to reject the null hypothesis.
-
 
 
 
