@@ -8,10 +8,28 @@ EDA of the Lakers' Game Log for the 2019-2020 Season for both the Regular Games 
 
 
 Files:
-
-- Term Project - NBA Lakers' Stat Analysis.R
+ 
+- 2_Term Project - NBA Lakers' Stat Analysis.R
 
 - Lakers 2019-20 Game log.csv
+
+- 3_TermProject.pdf
+
+- 3_TermProject.rmd
+
+- 4_handout.pdf
+
+- 4_handout.Rmd
+
+- TermProject.pdf
+
+- TermProject.html
+
+- README.md
+
+- .Rhistory
+
+- /TermProject_files/figure-html
 
 - Math 23C Final Project Outline.docx
 
