@@ -16,100 +16,13 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 #Packages used
 library(dplyr)
+library(ggplot2)
 ```
 
 \newpage
 
-# Dataset description
+# A glimpse at the dataset 
 
-## Codebook
-
-### Game level variables
-
-- Rk -- Rank
-
-- G -- Season Game
-
-- W_E -- opponent is from East or West
-
-- Opp -- Opponent
-
-- W_L -- Lakers team won or lost
-
-- Tm -- Lakers team Points
-
-- Opp_pts -- Opponent Points
-
-### Lakers relevant variables
-
-- FG_LA -- Field Goals
-
-- FGA_LA -- Field Goal Attempts
-
-- FGpc_LA -- Field Goal Percentage
-
-- X3P_LA -- 3-Point Field Goals
-
-- X3PA_LA -- 3-Point Field Goal Attempts
-
-- X3Ppc_LA -- 3-Point Field Goal Percentage
-
-- FT_LA -- Free Throws
-
-- FTA_LA -- Free Throw Attempts
-
-- FTpc_LA -- Free Throw Percentage
-
-- ORB_LA -- Offensive Rebounds
-
-- TRB_LA -- Total Rebounds
-
-- AST_LA -- Assists
-
-- STL_LA -- Steals
-
-- BLK_LA -- Blocks
-
-- TOV_LA -- Turnovers
-
-- PF_LA -- Personal Fouls
-
-### Opponent relevant variables
-
-- FG -- Opponent Field Goals
-
-- FGA -- Opponent Field Goal Attempts
-
-- FGpc -- Opponent Field Goal Percentage
-
-- X3P -- Opponent 3-Point Field Goals
-
-- X3PA -- Opponent 3-Point Field Goal Attempts
-
-- X3Ppc -- Opponent 3-Point Field Goal Percentage
-
-- FT -- Opponent Free Throws
-
-- FTA -- Opponent Free Throw Attempts
-
-- FTpc -- Opponent Free Throw Percentage
-
-- ORB -- Opponent Offensive Rebounds
-
-- TRB -- Opponent Total Rebounds
-
-- AST -- Opponent Assists
-
-- STL -- Opponent Steals
-
-- BLK -- Opponent Blocks
-
-- TOV -- Opponent Turnovers
-
-- PF -- Opponent Personal Fouls
-
-## Importing and cleaning data
-Reference: https://www.basketball-reference.com/teams/LAL/2020/gamelog/
 ```{r, message = FALSE, warning = FALSE}
 
 #Import dataset
@@ -118,77 +31,62 @@ Lakers <- read.csv("Lakers\ 2019-20\ Game\ log.csv"); head(Lakers, n = c(6, 8)) 
 # Convert to proper date format
 Lakers$Dates <- as.Date(Lakers$Date)
 attach(Lakers)
-```
 
-## Summary of variables
-
-```{r}
-summary(Lakers) %>%
-  t() %>%
-  as.data.frame() %>%
-  select(-Var2) %>%
-  rename(Variable=Var1, Description=Freq) %>%
-  filter(!is.na(Description)) %>%
-  arrange(Variable) %>%
-  knitr::kable()
-```
-
-## Number of columns and rows in dataset
-```{r}
-length(Lakers)
-nrow(Lakers)
 # Creating categorical columns
-WonLost <- W_L == "W"; head(WonLost) 
-sum(WonLost) # total wins
+WonLost <- ifelse(W_L == "W", "Win", "Lost") 
 ```
+
 
 \newpage
 
 # Graphical analysis
 
 ## Barplot of wins vs losses for our team
- This plot shows the number of losses compared to the number wins by our team. 
- The y-axis gives the count of wins and losses. The x-label answers the question
- "did the team win?", FALSE means losing and TRUE means winning.
+
+This plot shows the number of losses compared to the number wins by our team. The y-axis gives the count of wins and losses. The x-label answers the question "did the team win?". The Lakers season was a majorly successful one: they won 68 games in total and lost 24 of them. 52 of those wins were in regular season, with the rest done in post season.
+
 ```{r}
-library(ggplot2)
-Lakers %>% ggplot(aes(WonLost))+geom_bar(fill="orange")+
+Lakers %>% 
+  ggplot(aes(WonLost)) + 
+  geom_bar(fill="orange") +
   xlab("Won Game?") +
-  ggtitle("Total Lakers Wins and Losses")
+  ggtitle("Total Lakers Wins and Losses") +
+  theme_minimal()
 ```
  
 
 ## Barplot of 3 point shots from our team
 
-This plot shows the number of times the team scores a 3-point shot in a game.
-How often a 3-pointer occurs ranges from the minimum of 2 to a maximum of 19
-in a single game.
+This plot shows the number of times the team scores a 3-point shot in a game. How often a 3-pointer occurs ranges from the minimum of 2 to a maximum of 19 in a single game. The mean three points per game where 11.26, with a mode of 11 and a median of 11.
+
 ```{r}
-Lakers %>% ggplot(aes(X3P_LA))+geom_bar(fill="yellow")+
+Lakers %>% ggplot(aes(X3P_LA))+
+  geom_bar(fill="yellow") +
   xlab("3-pointer count") +
-  ylab("Frequency")+
-  ggtitle("Lakers' Number of 3-Pointers per Game")
+  ylab("Frequency") +
+  ggtitle("Lakers' Number of 3-Pointers per Game") +
+  theme_minimal()
 ```
 
 
 ## Barplot of Opponent blocks 
 
-This plot shows how often an opponent successfully blocks our team in a game.
-Most often (the median), an opponent is able to block 3 times and, of course, 
-depending on the opponent's abilities, blocks can range from 0 to 9 in a game.
+This plot shows how often an opponent successfully blocks our team in a game. Most often (the median), an opponent is able to block 3 times and, of course, depending on the opponent's abilities, blocks can range from 0 to 9 in a game.
+
 ```{r}
 Lakers %>% ggplot(aes(BLK))+geom_bar(fill="green")+
   scale_x_continuous(breaks=c(1:10))+
   xlab("Block count") +
   ylab("Frequency")+
-  ggtitle("Lakers' Number of Opponent Blocks per Game") 
+  ggtitle("Lakers' Number of Opponent Blocks per Game") +
+  theme_minimal()
 ```
 
 
 ## Histogram of 3 point shots
 
-This is a histogram version of the barplot which shows the number of times the team scores a 3-point shot in a game.
-The data is the same, and so is the result, a 3-pointer event ranges from the minimum of 2 to a maximum of 19.
+This is a histogram version of the barplot which shows the number of times the team scores a 3-point shot in a game. The data is the same, and so is the result, a 3-pointer event ranges from the minimum of 2 to a maximum of 19.
+
 ```{r}
 Lakers %>%
   ggplot(aes(X3P_LA)) +
@@ -196,14 +94,14 @@ Lakers %>%
   scale_x_continuous(breaks=c(0:20))+
   ylab("Frequency")+
   xlab("3 point shots")+
-  ggtitle("Histogram of Lakers' 3 Pointers") 
+  ggtitle("Histogram of Lakers' 3 Pointers") +
+  theme_minimal()
 ```
 
 
 ## Histogram of Opponent blocks
  
-This is a histogram version that shows how often an opponent successfully blocks our team in a game.
-Same results, an opponent is able to block 3 times and ranges from 0 to 9 in a game.
+This is a histogram version that shows how often an opponent successfully blocks our team in a game. Same results, an opponent is able to block 3 times and ranges from 0 to 9 in a game.
 ```{r}
 Lakers %>%
   ggplot(aes(BLK)) +
@@ -211,7 +109,8 @@ Lakers %>%
   scale_x_continuous(breaks=c(0:12))+
   ylab("Frequency")+
   xlab("Number of Blocks")+
-  ggtitle("Histogram of Lakers' Opponent Blocks") 
+  ggtitle("Histogram of Lakers' Opponent Blocks")  +
+  theme_minimal()
 ```
 
 
@@ -220,7 +119,12 @@ Lakers %>%
 This histogram shows the probability of the number of free throws done by our team in a game.
 The range is from a minimum of 7 to a maximum of 33 with a maximum density at 14 and 17.
 ```{r}
-hist(FT_LA, probability=TRUE, main="Histogram of Lakers' Number of Free Throws per Game", xlab="Number of Free Throws", col = "pink", breaks=(0:35)) 
+hist(FT_LA, 
+     probability=TRUE, 
+     main="Histogram of Lakers' Number of Free Throws per Game", 
+     xlab="Number of Free Throws", 
+     col = "pink", 
+     breaks=(0:35)) 
 # free throws from the team per game
 ```
 
@@ -228,34 +132,20 @@ hist(FT_LA, probability=TRUE, main="Histogram of Lakers' Number of Free Throws p
 
 # Probability analysis
 
-## Probability density graph overlay on the our team's total number of rebounds in a game
-
-Here we have our team's probability of the total number of rebounds in a game.
-Ranging from a minimum of 25 to a maximum of 62, the graph seems like it came from a 
-normal distribution. Overlaying a normal distribution shows like it does.
-```{r}
-mu<-mean(TRB_LA); stdv<- sd(TRB_LA)
-hist(TRB_LA, probability=TRUE, main = "Histogram of Lakers' Total Number of Rebounds per Game", ylim=c(0,0.08), xlab="Number of Rebounds", col = "pink", breaks=(20:65)) 
-# total rebounds per game  
-curve(dnorm(x, mu, stdv), col="purple", add=TRUE, lwd=2) 
-#Appears to be a normal distribution. We will compare it with Deciles and a Q-Q plot
-Normal10<- qnorm(seq(0.01, 0.99, by=0.1), mean=mu, sd=stdv);
-Data10<- quantile(TRB_LA, seq(0.01, 0.99, by=0.1), type=2);
-plot(Normal10, Data10)
-f<-function(x) x
-curve(f, col="red", add=TRUE)
-#Our data does not differ much from the Normal Distribution, except in the first decile.
-```
-
 ## Probability density graph of our team's scores in a game
 
-We go back to our histogram of our team's score and its probability in a game.
-It also seems as if it fits a normal distribution like it shows with a normal distribution overlay.
-We can provide more proof later with a chi-square goodness of fit test.
+We go back to our histogram of our team's score and its probability in a game. By looking at it, it is plausible that we can model it by a normal distribution. Here we overlay a normal distribution to the data. Then, we provide evidence that this is right way to model it by using a chi-square goodness of fit test.
+
 ```{r}
-mu<-mean(Tm); mu
-stdv<-sd(Tm); stdv
-hist(Tm,breaks=seq(from=80, to = 150, by =5), probability=TRUE, main = "Histogram of Lakers' Scores per Game", xlab="Scores", col = "light blue") # team's score frequencies
+mu<-mean(Tm)
+stdv<-sd(Tm)
+hist(Tm,
+     breaks=seq(from=80, to = 150, by =5), 
+     probability=TRUE, 
+     main = "Histogram of Lakers' Scores per Game", 
+     xlab="Scores", 
+     col = "light blue") # team's score frequencies
+
 curve(dnorm(x, mu, stdv), col="dark blue", add=TRUE, lwd=2)
 
 #Binning and Chisq test to compare this histogram to a Normal Distribution
@@ -264,12 +154,12 @@ Exp <- rep(length(Tm)/10,10)    #expected scores per bin
 #Now we can count how many scores are in each bin
 binscores <- numeric(10)
 for (i in 1:10)  
-  binscores[i] <- sum((Tm >= dec[i]) & (Tm <= dec[i+1]) ); binscores
+  binscores[i] <- sum((Tm >= dec[i]) & (Tm <= dec[i+1]) )
 #Test for uniformity using chi square.
-Chi2 <- sum((binscores - Exp)^2/Exp); Chi2
+Chi2 <- sum((binscores - Exp)^2/Exp)
 #There were 10 bins. We estimated 2 parameters (mu and stdv), which costs two degrees of freedom
 #Also we "made the totals match", costing another 1. So there are 10-2-1=7 df.
-curve(dchisq(x, df = 7), from = 0, to = 120 )
+curve(dchisq(x, df = 7), from = 0, to = 120)
 abline(v=Chi2, col = "red")
 #The probability of this chi-square value is relatively large
 #The normal distribution was a good model
@@ -277,11 +167,10 @@ abline(v=Chi2, col = "red")
 
 ## Probability density graph of the opponents' scores in a game
 
-The following analysis shows that the Lakers had a slightly higher mean score
-than their average opponents did.
+The following analysis shows that the Lakers had a slightly higher mean score than their average opponents did.
 ```{r}
-mu<-mean(Opp_pts); mu
-stdv<-sd(Opp_pts); stdv
+mu<-mean(Opp_pts)
+stdv<-sd(Opp_pts)
 hist(Opp_pts,breaks=seq(from=80, to = 150, by =5), probability=TRUE, main = "Histogram of Lakers' Scores per Game", xlab="Scores", col = "violet") # team's score frequencies
 curve(dnorm(x, mu, stdv), col="dark blue", add=TRUE, lwd=2)
 
@@ -291,9 +180,9 @@ Exp <- rep(length(Opp_pts)/10,10)
 #Now we can count how many scores are in each bin
 binscores <- numeric(10)
 for (i in 1:10)  
-  binscores[i] <- sum((Opp_pts >= dec[i]) & (Opp_pts <= dec[i+1]) ); binscores
+  binscores[i] <- sum((Opp_pts >= dec[i]) & (Opp_pts <= dec[i+1]) )
 #Test for uniformity using chi square.
-Chi2 <- sum((binscores - Exp)^2/Exp); Chi2
+Chi2 <- sum((binscores - Exp)^2/Exp)
 #There were 10 bins. We estimated 2 parameters (mu and stdv), which costs two degrees of freedom
 #Also we "made the totals match", costing another 1. So there are 10-2-1=7 df.
 curve(dchisq(x, df = 7), from = 0, to = 120 )
@@ -305,17 +194,20 @@ abline(v=Chi2, col = "red")
 
 ## Contingency tables
 
-This table answers the question "how many times the opponents scored greater than 100 points in a game with our team".
-This does not say that the opponent won or not. But in the times that they did not, it only shows that our team scored more and that such a high scoring game would have been a truly awesome event to watch.
+This table answers the question "how many times the opponents scored greater than 100 points in a game with our team". In 68 games the opposition scored more than 100 points. We looked at how many of these games we won or lost. In 45 games, the opposition scored more than 100 points and we won, and in 23 times the opposition scored more than 100 points and we lost. 
+
 ```{r}
-Opp100 <- Opp_pts > 100; Opp100
-table(Opp100)
+Opp100 <- Opp_pts > 100
+table(Opp100, W_L) %>%
+  knitr::kable()
 ```
 
 This table shows the opposite of the table above, that despite being the all-around champion during that year, our team scored less than 100 in some games and this table shows that.
+
 ```{r}
-Less100 <- Tm < 100; Less100
-table(Less100)
+Less100 <- Tm < 100
+table(Less100) %>%
+  knitr::kable()
 ```
 
 \newpage
@@ -323,29 +215,36 @@ table(Less100)
 # Inferential and statistical analysis
 
 ## Permutation test
+
 Our permutation test will be comparing our team's scores in games played vs the opponents from the East and the opponents from the West
 
-H_o: The mean score of the opponents coming from the Eastern Conference is equal
-to the mean score of the opponents coming from the Western Conference
-H_a: The mean score of the opponents coming from the Eastern Conference is not equal
-to the mean score of the opponents coming from the Western Conference
+$H_o$: The mean score of the opponents coming from the Eastern Conference is equal to the mean score of the opponents coming from the Western Conference
 
-#Data for Eastern and Western Conference teams
+$H_a$: The mean score of the opponents coming from the Eastern Conference is not equal to the mean score of the opponents coming from the Western Conference
+
+## Data for Eastern and Western Conference teams
+
 How many opponents were from each, and what were their mean scores? 
+
 ```{r}
-Eastern <- W_E == "E"; head(Eastern) 
-East <- sum(Eastern); East # count of Eastern opponents = 31
+Eastern <- W_E == "E"
+East <- sum(Eastern) # count of Eastern opponents = 31
 ScorevsEast <- mean(Tm*Eastern); ScorevsEast # mean team score vs East = 37.03261
 
-Western <- W_E == "W"; head(Western) 
-West <- sum(Western); West # Western opponents = 61
+Western <- W_E == "W"
+West <- sum(Western) # Western opponents = 61
 ScorevsWest <- mean(Tm*Western); ScorevsWest # mean team score vs West = 76.26087
 ```
+
+Lakers played against `r East` opponents from the East and `r West`. The mean Lakers team Points against Eastern teams was of `r ScorevsEast` and against Western teams was `r ScorevsWest`.
+
 It shows that there are more opponents coming from the West and that their mean score
 obviously would have a higher range.
 
 ## Total number of games played and differences of mean scores 
+
 This will be our Observed value.
+
 ```{r}
 EW <- sum(Eastern) + sum(Western); EW # total number of games = 92
 Score_diff <- ScorevsEast - ScorevsWest; Score_diff # -39.22826
@@ -365,7 +264,8 @@ for (i in 1:N){
 head(Score_diffs)
 summary(Score_diffs)
 mean(Score_diffs) # 0.001794507 close to zero
-hist(Score_diffs, main="Mean Score difference between games against Eastern vs games against Western Opponents",
+hist(Score_diffs, 
+     main="Mean Score difference between games against Eastern vs games against Western Opponents",
      col="light gray", xlab="Mean difference", xlim=c(-55, 55))
 #Now display the observed value on the histogram
 abline(v = Observed, col = "purple")
